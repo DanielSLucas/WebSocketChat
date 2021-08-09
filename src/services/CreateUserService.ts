@@ -20,6 +20,8 @@ class CreateUserService {
         _id: userAlreadyExists._id
       },{
         $set: {socket_id, avatar, name},
+      },{
+        new: true,
       });
 
       return user
