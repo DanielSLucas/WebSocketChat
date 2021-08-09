@@ -71,7 +71,7 @@ io.on("connect", socket => {
 
     io.to(data.idChatRoom).emit("message", {
       message,
-      loggedUser,
+      user: loggedUser,
     });
 
     const room = await getChatRoomByIdService.execute(data.idChatRoom);
