@@ -1,5 +1,7 @@
 const socket = io("http://localhost:3000");
+let user;
 let idChatRoom = "";
+let numberOfMessages = 0;
 
 // First socket event
 // socket.on("chat_iniciado", data => {
@@ -53,10 +55,18 @@ function onLoad() {
     if (data.roomId !== idChatRoom) {
       const user = document.getElementById(`user_${data.from._id}`);
 
+      const notificationDiv = document.getElementById("notification")
+      if(notificationDiv) {
+        notificationDiv.remove();
+      }
+
+      numberOfMessages++;
       user.insertAdjacentHTML(
         "afterbegin",
-        `<div class="notification"></div>`
+        `<div class="notification" id="notification">${numberOfMessages}</div>`
       );
+    } else {
+      numberOfMessages = 0;
     }
   });
 }
@@ -79,10 +89,13 @@ function addMessage(data) {
       <span class="chat_message"> ${data.message.text}</span>
     </div>
   `;
+
+  divMessageUser.scrollTop = divMessageUser.scrollHeight;
 }
 
 function addUser(user) {
   const usersList = document.getElementById("users_list");
+  user = user;
   usersList.innerHTML += ` 
     <li
       class="user_name_list"
@@ -102,11 +115,19 @@ document.getElementById("users_list").addEventListener("click", (e) => {
   const inputMessage = document.getElementById("user_message");
   inputMessage.classList.remove("hidden");
 
+  if (e.target.matches("li.user_name_list") && e.target.classList.contains("user_in_focus")) {
+    e.target.classList.remove("user_in_focus");
+
+    document.getElementById("message_user").innerHTML = "";
+    return;
+  }
+
   document
     .querySelectorAll("li.user_name_list")
     .forEach((item) => item.classList.remove("user_in_focus"));
 
   document.getElementById("message_user").innerHTML = "";
+
   if (e.target && e.target.matches("li.user_name_list")) {
     const idUser = e.target.getAttribute("idUser");
 
