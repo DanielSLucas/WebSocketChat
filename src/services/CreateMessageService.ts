@@ -2,16 +2,16 @@ import { injectable } from "tsyringe";
 import { Message } from "../schemas/Message";
 
 interface CreateMessageDTO {
-  to: string;
+  from: string;
   text: string;
   roomId: string;
 }
 
 @injectable()
 class CreateMessageService {
-  async execute({ to, roomId, text }:CreateMessageDTO) {
+  async execute({ from, roomId, text }:CreateMessageDTO) {
     const message = await Message.create({
-      to,
+      from,
       text,
       roomId,
     });

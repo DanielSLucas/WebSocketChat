@@ -1,14 +1,14 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 type Message = Document & {
-  to: String;
-  text: String;
+  from: string;
+  text: string;
   created_at: Date;
-  rommId: String;
+  rommId: string;
 }
 
 const MessageSchema = new Schema({
-  to: {
+  from: {
     type: Schema.Types.ObjectId,
     ref: "Users"
   },
@@ -17,7 +17,7 @@ const MessageSchema = new Schema({
     type: Date,
     default: Date.now(),
   },
-  rommId: {
+  roomId: {
     type: String,
     ref: "ChatRoom"
   },
