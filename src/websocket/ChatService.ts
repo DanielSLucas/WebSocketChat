@@ -4,6 +4,7 @@ import { CreateChatRoomService } from "../services/CreateChatRoomService";
 import { CreateMessageService } from "../services/CreateMessageService";
 import { CreateUserService } from "../services/CreateUserService";
 import { GetAllUsersService } from "../services/GetAllUsersService";
+import { GetChatRoomByIdService } from "../services/GetChatRoomByIdService";
 import { GetChatRoomByUsersService } from "../services/GetChatRoomByUsersService";
 import { GetMessagesByChatRoomService } from "../services/GetMessagesByChatRoomService";
 import { GetUserBySocketIdService } from "../services/GetUserBySocketIdService";
@@ -58,6 +59,7 @@ io.on("connect", socket => {
   socket.on("message", async (data) => {
     const getUserBySocketIdService = container.resolve(GetUserBySocketIdService);
     const createMessageService = container.resolve(CreateMessageService);
+    const getChatRoomByIdService = container.resolve(GetChatRoomByIdService);
 
     const loggedUser = await getUserBySocketIdService.execute(socket.id);
 
@@ -71,5 +73,17 @@ io.on("connect", socket => {
       message,
       loggedUser,
     });
+
+    const room = await getChatRoomByIdService.execute(data.idChatRoom);
+
+    const toUser = room.idUsers.find(
+      response => String(response._id) != String(loggedUser._id)
+    );
+
+    io.to(toUser.socket_id).emit("notification", {
+      newMessage: true,
+      roomId: data.idChatRoom,
+      from: loggedUser
+    })
   });
 });
